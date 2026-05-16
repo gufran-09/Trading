@@ -140,7 +140,7 @@ function zk_kafka() {
 
     # Install Kafka, which also installs Zookeeper
     if [ ! -f /tmp/kafka_${KAFKA_SCALA_VERSION}-${KAFKA_VERSION}.tgz ]; then
-        curl -# -L -o /tmp/kafka_${KAFKA_SCALA_VERSION}-${KAFKA_VERSION}.tgz https://dlcdn.apache.org/kafka/${KAFKA_VERSION}/kafka_${KAFKA_SCALA_VERSION}-${KAFKA_VERSION}.tgz
+        curl -# -L -o /tmp/kafka_${KAFKA_SCALA_VERSION}-${KAFKA_VERSION}.tgz https://archive.apache.org/dist/kafka/${KAFKA_VERSION}/kafka_${KAFKA_SCALA_VERSION}-${KAFKA_VERSION}.tgz
     fi
 
     tar xfz /tmp/kafka_${KAFKA_SCALA_VERSION}-${KAFKA_VERSION}.tgz -C /opt

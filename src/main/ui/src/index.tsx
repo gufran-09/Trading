@@ -5,6 +5,23 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+// Fix: Prevent react-error-overlay from blocking input fields
+// react-scripts@4.0.3 has a bug where the error overlay creates an invisible
+// full-screen iframe that intercepts all pointer events on the page
+if (process.env.NODE_ENV === 'development') {
+  const disableOverlay = async () => {
+    try {
+      const { stopReportingRuntimeErrors } = await import(
+        'react-error-overlay'
+      );
+      stopReportingRuntimeErrors();
+    } catch (e) {
+      // Silently ignore if module not available
+    }
+  };
+  disableOverlay();
+}
+
 const container = document.getElementById('root');
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const root = createRoot(container!);
