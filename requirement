@@ -1,0 +1,122 @@
+Dashboard
+---------
+
+admin login - 
+curl -H "Content-Type: application/json" -H "Authorization:f5d7a1f7-4c13-4d67-9813-ee6d6e76a135" -X POST -d '{"userId":"joe@123.com","passcode":"aaaaaaaa"}' https://api.streetone.com/login
+
+1. Accounts
+GET
+/account/balance/list
+
+curl command - 
+curl -H "Content-Type: application/json" -H "Authorization:eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiI3YzQ5YzQ5Zi05NDY3LTQ5M2EtYjc1Ny1hMjI1ZGU4MGEyNzUiLCJpYXQiOjE3NzY5OTk1MzcsInN1YiI6ImF1dGhyb3V0ZXMiLCJpc3MiOiJzdDEiLCJleHAiOjE3Nzc2MDQzMzd9.XlXr4jy1JWX0aKgLT4mJUBHV-SIqVaHitRQedP0qtfAcJwb7WA52pfEiviYEtjMZD5Y_OUB8E77Ws1zUpIA8_Q" -X GET https://api.streetone.com/account/balance/list
+
+2. Quotes
+acl is asset class, should be EQU or DRV
+
+GET
+/feed/securitypost
+
+curl command - 
+curl -H "Authorization:eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJjOWQ1YzAxMi0yZWZhLTRmMTAtYTFlOC0zY2Q4OGZmN2Q5YWMiLCJpYXQiOjE3NzY1MjI0NzUsInN1YiI6ImF1dGhyb3V0ZXMiLCJpc3MiOiJzdDEiLCJleHAiOjE3NzcxMjcyNzV9.19uX-OMXY9E7NI0hdrdnUB5k8UrM-ZlvnbMzs7WCxTm4RwyTteGkdIuG5bgQLuqjJ3WnqDUZyvX4v83O_ehgiQ" -X GET "https://api.streetone.com/feed/securitypost?acl=EQU"
+
+after displaying the response, update the screen with security-quote-stream from websockets
+
+3. Orders
+GET
+/stream/order
+
+curl command - 
+curl -H "Content-Type: application/json" -H "Authorization:eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiI3YzQ5YzQ5Zi05NDY3LTQ5M2EtYjc1Ny1hMjI1ZGU4MGEyNzUiLCJpYXQiOjE3NzY5OTk1MzcsInN1YiI6ImF1dGhyb3V0ZXMiLCJpc3MiOiJzdDEiLCJleHAiOjE3Nzc2MDQzMzd9.XlXr4jy1JWX0aKgLT4mJUBHV-SIqVaHitRQedP0qtfAcJwb7WA52pfEiviYEtjMZD5Y_OUB8E77Ws1zUpIA8_Q" -X GET https://api.streetone.com/stream/order
+
+after displaying response from rest call, display order-stream from websocket channel
+
+4. Order Execution
+GET
+/stream/orderexec
+
+curl command - 
+curl -H "Content-Type: application/json" -H "Authorization:eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiI3YzQ5YzQ5Zi05NDY3LTQ5M2EtYjc1Ny1hMjI1ZGU4MGEyNzUiLCJpYXQiOjE3NzY5OTk1MzcsInN1YiI6ImF1dGhyb3V0ZXMiLCJpc3MiOiJzdDEiLCJleHAiOjE3Nzc2MDQzMzd9.XlXr4jy1JWX0aKgLT4mJUBHV-SIqVaHitRQedP0qtfAcJwb7WA52pfEiviYEtjMZD5Y_OUB8E77Ws1zUpIA8_Q" -X GET https://api.streetone.com/stream/orderexec
+
+after displaying response from rest call, display order-exec-stream from websocket channel
+
+5. Websockets URI - /wsserver/login
+to login to the websocket server the http POST request should set a cookie in the request header
+
+cookie name should be "whirlpool"
+cookie value should be our usual jwt token that is received after a successful login with user id and password. 
+
+POST request should have the following - 
+
+user = loginId
+password = jwt token
+
+loginId is the loginId used to login to the dashboard. 
+
+if response is success then send upgrade request to below end-point, header should be set to "Upgrade" and value should be "websocket"
+
+"ws://" + "api.streetone.com" + "/wsserver/wsupgrade"
+
+websocket handshake should be complete now. the following websocket frames will be streamed to the client - 
+
+"order-stream"
+"order-exec-stream" 
+"trade-alert-stream" 
+"security-quote-stream"
+"ats-quote-stream" 
+
+6. Alerts
+display trade-alert-stream from websocket channel
+
+7. Market Status
+	1. display a horizontal bar with three input text boxes arranged horizontally. 
+
+		1. Label for text box 1 should be "User Number", inside the text box display "Enter user number". next to the text box display a button labelled "Halt" 
+		2. Label for text box 2 should be "Symbol", inside the text box display "Enter symbol". next to the text box display a button labelled "Halt" 
+		3. Label for text box 2 should be "Market", inside the text box display "Enter market". next to the text box display a button labelled "Halt" 
+
+	when the user presses the "Halt" button above, then POST to the below end-point
+
+	/marketstatus
+
+	flag - value should be 1
+	trade - value should be the string the user entered in any of the above text box
+
+	2. below the horizontal bar display "Trading Stopped", 
+
+	3. below "Trading Stopped" display the GET response from below end-point. response is a list of marketStatus
+
+	   /marketstatus
+
+	   each line should display string contained in trade and next to it a button labelled "Resume Trading"
+
+	   when user clicks on "Resume Trading" button then POST to the below end-point 
+
+	   /marketstatus
+
+	   flag - value should be 0
+	   trade - value should be string contained in trade
+
+Optional Functions, we can do these later
+------------------------------------------
+8. Balance for a specific account, aid is account number - optional
+GET
+/account/balance/account/:aid/balance
+
+9. Holdings for a specific account, aid is account number - optional
+GET
+/account/holding/account/:aid/holding
+
+10. Transactions for a specific account, aid is account number - optional
+GET
+/account/transaction/account/:aid/transaction
+
+11. Orders for a specific account, aid is account number - optional
+GET
+/account/order/account/:aid/order
+
+12. When a user clicks on a stock quote we display specific information for the stock, sym should be symbol - optional
+GET
+/orderbook/symbol/:sym
+
+after displaying the response, update the screen with ats-quote-stream frame from websockets

@@ -17,42 +17,53 @@ interface ServiceListProps {
 const ServiceList = (props: ServiceListProps): JSX.Element => {
   const { serviceName } = props;
   const stockList = useSelector((state: InitialState) => state.stock.stockList);
-  const upDownList = useSelector(
-    (state: InitialState) => state.upDown.upDownList
-  );
-  const weatherList = useSelector(
-    (state: InitialState) => state.weather.weatherList
-  );
+  const upDownList = useSelector((state: InitialState) => state.upDown.upDownList);
+  const weatherList = useSelector((state: InitialState) => state.weather.weatherList);
 
-  let list;
-
-  if (serviceName === 'weather') {
-    list = weatherList;
-  } else if (serviceName === 'stocks') {
-    list = stockList;
-  } else if (serviceName === 'updown') {
-    list = upDownList;
+  if (serviceName === 'stocks') {
+    return (
+      <div className={styles.tableContainer}>
+        <table className={styles.stockTable}>
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Price</th>
+              <th>Change</th>
+              <th>Volume</th>
+              <th>Trend</th>
+            </tr>
+          </thead>
+          <tbody>
+            {stockList?.map((item) => (
+              <Stock key={item.key} item={item as StockData} />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
   }
 
-  return (
-    <div className={styles.top}>
-      {list?.map((item) => {
-        if (serviceName === 'weather') {
-          return <WeatherLocation key={item.key} item={item as WeatherData} />;
-        }
+  if (serviceName === 'weather') {
+    return (
+      <div className={styles.weatherGrid}>
+        {weatherList?.map((item) => (
+          <WeatherLocation key={item.key} item={item as WeatherData} />
+        ))}
+      </div>
+    );
+  }
 
-        if (serviceName === 'stocks') {
-          return <Stock key={item.key} item={item as StockData} />;
-        }
+  if (serviceName === 'updown') {
+    return (
+      <div className={styles.gridContainer}>
+        {upDownList?.map((item) => (
+          <UpDown key={item.key} item={item as UpDownData} />
+        ))}
+      </div>
+    );
+  }
 
-        if (serviceName === 'updown') {
-          return <UpDown key={item.key} item={item as UpDownData} />;
-        }
-
-        return null;
-      })}
-    </div>
-  );
+  return <></>;
 };
 
 ServiceList.propTypes = {

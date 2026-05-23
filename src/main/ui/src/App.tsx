@@ -1,6 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 import Login from './modules/app/Login';
 import Main from './modules/app/Main';
@@ -163,7 +164,7 @@ const App = (): JSX.Element => {
 
       // Every time the server sends us something over the websocket, this function will be called.
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      ws.onmessage = () => {};
+      ws.onmessage = () => { };
       ws.onerror = (evt) => {
         setServerDown(true);
         ws = null as any;
@@ -358,15 +359,20 @@ const App = (): JSX.Element => {
 
   return (
     <div className="app">
-      {!isLoggedIn ? (
-        <div id="logindiv">
-          <Login />
-        </div>
-      ) : (
-        <div id="maindiv">
-          <Main />
-        </div>
-      )}
+      <Routes>
+        <Route
+          path="/login"
+          element={!isLoggedIn ? <div id="logindiv"><Login /></div> : <Navigate to="/" replace />}
+        />
+        <Route
+          path="/"
+          element={isLoggedIn ? <div id="maindiv"><Main /></div> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="*"
+          element={<Navigate to={isLoggedIn ? "/" : "/login"} replace />}
+        />
+      </Routes>
     </div>
   );
 };

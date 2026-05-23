@@ -1,65 +1,96 @@
-.left {
-  text-align: left;
-}
-
 .row {
-  flex-direction: row;
+  border-top: 0.5px solid rgba(15, 25, 35, 1);
+  transition: background-color 0.2s;
 }
 
-.cardHeader {
-  background-color: lightcoral;
+.row:hover {
+  background-color: rgba(255, 255, 255, 0.02);
 }
 
-.cardFrame {
-  border: 1px;
-  border-color: black;
-  background-color: white;
-  border-style: solid;
-  padding-bottom: 5px;
-  margin-bottom: 6px;
+.row:hover .removeBtn {
+  opacity: 1;
 }
 
-.red {
-  color: red;
-  border: 0;
-  margin: 2px;
+.cell {
+  padding: 12px 0;
+  vertical-align: middle;
 }
 
-.plain {
-  border: 0;
-  margin: 2px;
+.symbol {
+  color: #e2e8f0;
+  font-weight: 600;
+  font-size: 14px;
 }
 
-.flexCenter {
+.price {
+  color: #f1f5f9;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+}
+
+.changePill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.changeUp {
+  background-color: rgba(34, 197, 94, 0.15); /* #22c55e15 */
+  color: var(--accent-green);
+}
+
+.changeDown {
+  background-color: rgba(239, 68, 68, 0.15); /* #ef444415 */
+  color: var(--accent-red);
+}
+
+.volume {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.trendCell {
   display: flex;
-  justify-content: center;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.flexRow {
+.sparkline {
   display: flex;
-  flex-direction: row;
+  align-items: flex-end;
+  gap: 2px;
+  height: 24px;
 }
 
-.flexColumn {
-  display: flex;
-  flex-direction: column;
+.bar {
+  width: 4px;
+  border-radius: 2px;
 }
 
-.leftRight5 {
-  margin-left: 5px;
-  margin-right: 5px;
+.barGreen {
+  background-color: var(--accent-green);
 }
 
-.right20 {
-  margin-right: 20px;
+.barRed {
+  background-color: var(--accent-red);
 }
 
-.left15 {
-  margin-left: 15px;
+.removeBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-faint);
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+  margin-left: 10px;
 }
 
-.box {
-  border: 1px solid;
-  padding-top: 5px;
-  padding-bottom: 5px;
+.removeBtn:hover {
+  color: var(--accent-red);
 }

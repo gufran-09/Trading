@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import styles from './WeatherLocation.module.css';
 import WeatherData from '../../types/WeatherData';
 import InitialState from '../../types/InitialState';
@@ -9,6 +9,16 @@ import InitialState from '../../types/InitialState';
 interface WeatherProps {
   item: WeatherData;
 }
+
+const getWeatherEmoji = (condition?: string) => {
+  const c = condition?.toLowerCase() || '';
+  if (c.includes('rain')) return '🌧️';
+  if (c.includes('cloud')) return '☁️';
+  if (c.includes('snow')) return '❄️';
+  if (c.includes('storm') || c.includes('thunder')) return '⛈️';
+  if (c.includes('clear') || c.includes('sun')) return '☀️';
+  return '⛅';
+};
 
 const WeatherLocation = (props: WeatherProps): JSX.Element => {
   const { item } = props;
@@ -26,33 +36,32 @@ const WeatherLocation = (props: WeatherProps): JSX.Element => {
   );
 
   return (
-    <div className={`${styles.cardFrame} ${styles.flexRow}`}>
+    <div className={styles.weatherCard}>
+      <div className={styles.cardHeader}>
+        <span className={styles.cityName} title={`${city}, ${stateOrCountry}`}>
+          {city || key}
+        </span>
+        <span className={styles.weatherIcon}>
+          {getWeatherEmoji(conditions)}
+        </span>
+      </div>
+      <div>
+        <div className={styles.temperature}>{temperature}°</div>
+        <div className={styles.description}>
+          {conditions || 'Unknown'} (Feels {feelsLikeTemperature}°)
+        </div>
+      </div>
+      
       <button
         type="button"
-        className={`${styles.red} ${styles.right20}`}
+        className={styles.removeBtn}
         name="remove_weather"
         onClick={removeWeatherHandler}
         data-key={key}
+        title="Remove"
       >
-        <FontAwesomeIcon icon={faTrash} />
+        <FontAwesomeIcon icon={faTimes} />
       </button>
-      <div className={styles.flexColumn}>
-        <div className={`${styles.row} ${styles.left} ${styles.cardHeader}`}>
-          &nbsp;&nbsp;Weather for {key} ({city}, {stateOrCountry})&nbsp;&nbsp;
-        </div>
-        <div className={`${styles.row} ${styles.left}`}>
-          &nbsp;&nbsp;Air Temp {temperature} degrees
-        </div>
-        <div className={`${styles.row} ${styles.left}`}>
-          &nbsp;&nbsp;Feels Like {feelsLikeTemperature} degrees
-        </div>
-        <div className={`${styles.row} ${styles.left}`}>
-          &nbsp;&nbsp;Condition {conditions}
-        </div>
-        <div className={`${styles.row} ${styles.left}`}>
-          &nbsp;&nbsp;{timestamp}&nbsp;&nbsp;
-        </div>
-      </div>
     </div>
   );
 };

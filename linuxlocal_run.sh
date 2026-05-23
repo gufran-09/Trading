@@ -119,32 +119,7 @@ function kafka_topics() {
        echo "ERROR Provisioning Kafka topics, see log for more details"
     fi
 }
-
 function zk_kafka() {
-    export KAFKA_SCALA_VERSION=2.13
-    export KAFKA_VERSION=3.7.0
-
-    echo "Removing previous installation of Kafka and Zookeeper"
-    rm -rf /opt/kafka_${KAFKA_SCALA_VERSION}-${KAFKA_VERSION}
-    rm -rf /opt/kafka
-
-    # axe kafka logs
-    echo "Removing Kafka logs"
-    rm -rf /tmp/kafka-logs
-
-    # axe temp Zk data
-    echo "Removing Zookeeper data"
-    rm -rf /tmp/zookeeper
-
-    echo "Installing version ${KAFKA_SCALA_VERSION}-${KAFKA_VERSION} of Kafka and Zookeeper..."
-
-    # Install Kafka, which also installs Zookeeper
-    if [ ! -f /tmp/kafka_${KAFKA_SCALA_VERSION}-${KAFKA_VERSION}.tgz ]; then
-        curl -# -L -o /tmp/kafka_${KAFKA_SCALA_VERSION}-${KAFKA_VERSION}.tgz https://dlcdn.apache.org/kafka/${KAFKA_VERSION}/kafka_${KAFKA_SCALA_VERSION}-${KAFKA_VERSION}.tgz
-    fi
-
-    tar xfz /tmp/kafka_${KAFKA_SCALA_VERSION}-${KAFKA_VERSION}.tgz -C /opt
-    ln -s /opt/kafka_${KAFKA_SCALA_VERSION}-${KAFKA_VERSION} /opt/kafka
 
     export KAFKA_HOME=/opt/kafka
     export KAFKA_OPS=localhost:9092
@@ -155,18 +130,55 @@ function zk_kafka() {
     export ZOOKEEPER=localhost:2181
     export ZOOKEEPEROPS=localhost:2181
 
+    echo "Checking permanent Kafka installation..."
+
+    # Verify Kafka installation exists
+    if [ ! -f "${KAFKA_HOME}/bin/kafka-topics.sh" ]; then
+        echo "ERROR: Kafka installation not found!"
+        echo "Expected location: ${KAFKA_HOME}"
+        echo ""
+        echo "Install Kafka first at /opt/kafka"
+        exit 1
+    fi
+
+    echo "Kafka installation found."
+
+    # Clean Kafka runtime logs only
+    echo "Removing Kafka logs"
+    rm -rf /tmp/kafka-logs
+
+    # Clean Zookeeper runtime data only
+    echo "Removing Zookeeper data"
+    rm -rf /tmp/zookeeper
+
+    # Initialize configs
     zookeeper_init
     kafka_init
 
     echo "Starting Apache Zookeeper Server..."
-    x-terminal-emulator -e "${ZOOKEEPER_HOME}/bin/zookeeper-server-start.sh ${ZOOKEEPER_HOME}/config/zoo.cfg" &
+
+mkdir -p /tmp/zookeeper
+
+nohup "${ZOOKEEPER_HOME}/bin/zookeeper-server-start.sh" \
+"${ZOOKEEPER_HOME}/config/zoo.cfg" \
+> /tmp/zookeeper/zookeeper.log 2>&1 &
+    # Wait for Zookeeper
+    sleep 10
 
     export KAFKA_HEAP_OPTS="-Xmx${KAFKA_HSIZE}m -Xms${KAFKA_HSIZE}m"
     export KAFKA_JVM_PERFORMANCE_OPTS="-server -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35 -Djava.awt.headless=true"
 
     echo "Starting Apache Kafka Server ($KAFKA_HEAP_OPTS)..."
-    x-terminal-emulator -e "${KAFKA_HOME}/bin/kafka-server-start.sh ${KAFKA_HOME}/config/server.properties" &
 
+mkdir -p /tmp/kafka
+
+nohup "${KAFKA_HOME}/bin/kafka-server-start.sh" \
+"${KAFKA_HOME}/config/server.properties" \
+> /tmp/kafka/kafka.log 2>&1 &
+    # Wait for Kafka
+    sleep 15
+
+    # Create Kafka topics
     kafka_topics
 }
 
@@ -175,16 +187,29 @@ function build_services {
 }
 
 function start_services {
-    echo "Starting Stock Service"
-    x-terminal-emulator -e ./stockservice/target/stockservice &
-    echo "Starting UpDown Service"
-    x-terminal-emulator -e ./updownservice/target/updownservice &
-    echo "Starting Weather Service"
-    x-terminal-emulator -e ./weatherservice/target/weatherservice &
-    echo "Starting Whirlpool Server"
-    cd whirlpoolserver
-    x-terminal-emulator -e "./target/whirlpoolserver" &
-    cd ..
+
+    mkdir -p /tmp/whirlpool-logs
+
+    echo "Starting Stock Service..."
+    nohup ./stockservice/target/stockservice \
+    > /tmp/whirlpool-logs/stockservice.log 2>&1 &
+
+    echo "Starting UpDown Service..."
+    nohup ./updownservice/target/updownservice \
+    > /tmp/whirlpool-logs/updownservice.log 2>&1 &
+
+    echo "Starting Weather Service..."
+    nohup ./weatherservice/target/weatherservice \
+    > /tmp/whirlpool-logs/weatherservice.log 2>&1 &
+
+    echo "Starting Whirlpool Server..."
+    (
+        cd whirlpoolserver
+        nohup ./target/whirlpoolserver \
+        > /tmp/whirlpool-logs/whirlpoolserver.log 2>&1 &
+    )
+
+    echo "All services started."
 }
 
 # check for required tools

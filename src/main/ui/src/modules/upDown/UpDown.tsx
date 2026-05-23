@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import styles from './UpDown.module.css';
 import UpDownData from '../../types/UpDownData';
 import InitialState from '../../types/InitialState';
@@ -19,28 +19,28 @@ const UpDown = (props: UpDownProps): JSX.Element => {
     (state: InitialState) => state.upDown.removeUpDownHandler
   );
 
+  const isUp = status === 'UP';
+
   return (
-    <div className={`${styles.cardFrame} ${styles.flexRow}`}>
+    <div className={styles.uptimeCard}>
+      <div className={`${styles.statusDot} ${isUp ? styles.glowGreen : styles.glowRed}`}></div>
+      <div className={styles.infoColumn}>
+        <span className={styles.serviceName}>{key}</span>
+        <span className={styles.pingTime}>{timestamp}</span>
+      </div>
+      <div className={`${styles.statusPill} ${isUp ? styles.pillUp : styles.pillDown}`}>
+        {status}
+      </div>
       <button
         type="button"
-        className={`${styles.red} ${styles.right20}`}
+        className={styles.removeBtn}
         name="remove_updown"
         onClick={removeUpDownHandler}
         data-key={key}
+        title="Remove URL"
       >
-        <FontAwesomeIcon icon={faTrash} />
+        <FontAwesomeIcon icon={faTimes} />
       </button>
-      <div className={styles.flexColumn}>
-        <div className={`${styles.row} ${styles.left} ${styles.cardHeader}`}>
-          &nbsp;&nbsp;Status for {key}&nbsp;&nbsp;
-        </div>
-        <div className={`${styles.row} ${styles.left}`}>
-          &nbsp;&nbsp;{status}
-        </div>
-        <div className={`${styles.row} ${styles.left}`}>
-          &nbsp;&nbsp;{timestamp}&nbsp;&nbsp;
-        </div>
-      </div>
     </div>
   );
 };

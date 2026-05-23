@@ -1,65 +1,75 @@
-.left {
-  text-align: left;
-}
-
-.row {
-  flex-direction: row;
-}
-
-.cardHeader {
-  background-color: lightpink;
-}
-
-.cardFrame {
-  border: 1px;
-  border-color: black;
-  background-color: white;
-  border-style: solid;
-  padding-bottom: 5px;
-  margin-bottom: 6px;
-}
-
-.red {
-  color: red;
-  border: 0;
-  margin: 2px;
-}
-
-.plain {
-  border: 0;
-  margin: 2px;
-}
-
-.flexCenter {
+.uptimeCard {
+  background-color: var(--bg-deep);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 10px 12px;
   display: flex;
-  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
 
-.flexRow {
-  display: flex;
-  flex-direction: row;
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
-.flexColumn {
+.glowGreen {
+  background-color: var(--accent-green);
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+}
+
+.glowRed {
+  background-color: var(--accent-red);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+}
+
+.infoColumn {
   display: flex;
   flex-direction: column;
+  gap: 2px;
+  flex-grow: 1;
 }
 
-.leftRight5 {
-  margin-left: 5px;
-  margin-right: 5px;
+.serviceName {
+  font-size: 12px;
+  color: var(--text-primary);
+  font-weight: 500;
 }
 
-.right20 {
-  margin-right: 20px;
+.pingTime {
+  font-size: 10px;
+  color: var(--text-faint);
 }
 
-.left15 {
-  margin-left: 15px;
+.statusPill {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-left: auto;
 }
 
-.box {
-  border: 1px solid;
-  padding-top: 5px;
-  padding-bottom: 5px;
+.pillUp {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: var(--accent-green);
+}
+
+.pillDown {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: var(--accent-red);
+}
+
+.removeBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-faint);
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.removeBtn:hover {
+  color: var(--accent-red);
 }

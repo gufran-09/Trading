@@ -1,6 +1,36 @@
-.top {
+.container {
   display: flex;
   flex-direction: column;
-  margin-left: 10px;
-  margin-right: 10px;
+  gap: 10px;
+}
+
+.tableContainer {
+  width: 100%;
+}
+
+.stockTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stockTable th {
+  font-size: 10px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0 0 10px;
+  font-weight: 500;
+  text-align: left;
+  border-bottom: 0.5px solid var(--border-subtle);
+}
+
+.gridContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.weatherGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
 }
